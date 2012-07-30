@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MonedaAlAire</string>
+    <string name="titulo">Moneda al aire!</string>
+    <string name="botonEnviar">Preguntar Cara o Seca vía SMS</string>
+    <string name="botonRecibir">Esperar recepción de SMS de pregunta</string>
+    <string name="bienvenido">\n\n\nBienvenido! esta aplicación permite realizar un \'fair coin flip over the phone\', vía SMS y utilizando SHA-512.\n\n\n\n\n\n\n\n\n</string>
+    <string name="firma">IESE - EST - TFI - PCE - 2012 - Lic. Ariel Maiorano</string>
+</resources>

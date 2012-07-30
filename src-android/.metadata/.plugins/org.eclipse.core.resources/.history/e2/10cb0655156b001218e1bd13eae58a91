@@ -1,0 +1,7 @@
+package est.tfi.android;
+
+import BroadcastReceiver;
+
+public class SMSBroadcastReceiver extends BroadcastReceiver {
+
+}

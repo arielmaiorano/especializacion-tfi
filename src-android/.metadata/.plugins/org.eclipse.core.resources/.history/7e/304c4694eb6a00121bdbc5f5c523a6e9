@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/moneda_al_aire"
+    android:weightSum="1">
+<TextView  
+    android:layout_width="fill_parent" 
+    android:layout_height="wrap_content" 
+    android:text="@string/titulo"
+    android:textAppearance="?android:attr/textAppearanceLarge"
+    android:focusable="false"/>
+<TextView android:textAppearance="?android:attr/textAppearanceMedium" android:id="@+id/textView1" android:layout_width="fill_parent" android:text="@string/bienvenido"></TextView>
+<Button android:id="@+id/button1" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/botonEnviar"></Button>
+<Button android:id="@+id/button2" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/botonRecibir"></Button>
+</LinearLayout>

@@ -1,0 +1,35 @@
+package est.tfi.android;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.TextView;
+
+public class MonedaAlAireActivity extends Activity implements OnClickListener {
+
+	public Button btnEnviar;
+	public Button btnRecibir;
+	public TextView tvCentro;
+	
+	/** Called when the activity is first created. */
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.main);
+        
+        btnEnviar = (Button) findViewById(R.id.button1);
+        btnRecibir = (Button) findViewById(R.id.button2);
+        btnEnviar.setOnClickListener(this);
+        btnRecibir.setOnClickListener(this);
+
+        tvCentro = (TextView) findViewById(R.id.textView1);
+        
+    }
+
+	public void onClick(View v) {
+		// TODO Auto-generated method stub
+		
+	}
+}

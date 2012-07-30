@@ -1,0 +1,339 @@
+package est.tfi;
+
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.security.Security;
+import java.util.List;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.SwingWorker;
+import javax.swing.border.EmptyBorder;
+
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import java.awt.GridLayout;
+
+public class VisualCryptoBob extends JFrame {
+
+	private JFrame _frame;
+	private JTextField tfPuerto;
+	private JButton btnIniciar;
+	private JButton btnDetener;
+	private JTextArea txtMensajes;
+	private InnerTask task;
+	private static final long serialVersionUID = 1L;
+	private JLabel lblTransparencia1;
+	private JPanel panel;
+	private JLabel lblTransparencia2;
+	private JPanel panel_1;
+	private JLabel lblResultado;
+	private JPanel pnlResultado;
+
+	/**
+	 * Create the frame.
+	 */
+	public VisualCryptoBob() {
+		// referencia local
+		_frame = this;
+		// se agregará hook al cerrar
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		// tamaño fijo
+		setBounds(300, 300, 523, 752);
+		setResizable(false);
+		// título
+		setTitle("TFI - PCE - Visual Cryptography como Bob");
+
+		JPanel contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		setContentPane(contentPane);
+		contentPane.setLayout(null);
+
+		JLabel lblPuerto = new JLabel(
+				"N\u00FAmero de conexi\u00F3n para esperar a Trent (puerto TCP)");
+		lblPuerto.setBounds(10, 11, 300, 14);
+		contentPane.add(lblPuerto);
+
+		tfPuerto = new JTextField();
+		tfPuerto.setText("22222");
+		tfPuerto.setBounds(320, 6, 70, 23);
+		contentPane.add(tfPuerto);
+		tfPuerto.setColumns(10);
+
+		JSeparator separator = new JSeparator();
+		separator.setBounds(10, 61, 500, 14);
+		contentPane.add(separator);
+
+		btnIniciar = new JButton("Iniciar");
+		btnIniciar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				btnIniciar.setEnabled(false);
+				btnDetener.setEnabled(true);
+				task = new InnerTask();
+				task.execute();
+			}
+		});
+		btnIniciar.setBounds(422, 6, 89, 25);
+		contentPane.add(btnIniciar);
+
+		btnDetener = new JButton("Detener");
+		btnDetener.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				task.cancel(true);
+			}
+		});
+		btnDetener.setEnabled(false);
+		btnDetener.setBounds(422, 31, 89, 25);
+		contentPane.add(btnDetener);
+
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(10, 73, 500, 120);
+		contentPane.add(scrollPane);
+
+		txtMensajes = new JTextArea();
+		scrollPane.setViewportView(txtMensajes);
+		txtMensajes.setEditable(false);
+		txtMensajes.setFont(new Font("Monospaced", Font.PLAIN, 11));
+		txtMensajes.setText("Esperando inicio...\n");
+		
+		lblTransparencia1 = new JLabel("Transparencia # 1 recibida de parte de Trent");
+		lblTransparencia1.setBounds(12, 204, 498, 14);
+		contentPane.add(lblTransparencia1);
+		
+		panel = new JPanel();
+		panel.setBounds(8, 226, 502, 142);
+		contentPane.add(panel);
+		panel.setLayout(new GridLayout(1, 0, 0, 0));
+		
+		lblTransparencia2 = new JLabel("Transparencia # 2 recibida de parte de Alice");
+		lblTransparencia2.setBounds(10, 377, 501, 14);
+		contentPane.add(lblTransparencia2);
+		
+		panel_1 = new JPanel();
+		panel_1.setBounds(8, 397, 502, 142);
+		contentPane.add(panel_1);
+		panel_1.setLayout(new GridLayout(1, 0, 0, 0));
+		
+		lblResultado = new JLabel("Resultado al suporponer transparencias");
+		lblResultado.setBounds(10, 550, 501, 14);
+		contentPane.add(lblResultado);
+		
+		pnlResultado = new JPanel();
+		pnlResultado.setBounds(8, 570, 502, 142);
+		contentPane.add(pnlResultado);
+		pnlResultado.setLayout(new GridLayout(1, 0, 0, 0));
+
+		// hook al cerrar
+		addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent e) {
+				// ((JFrame)e.getSource()).dispose();
+				_frame.dispose();
+			}
+		});
+
+	}
+
+	private class InnerTask extends SwingWorker<Void, String> {
+
+		String recv_2daParteNombre = null;
+		String recv_2daParteDireccion = null;
+		String recv_2daPartePuerto = null;
+		String recv_3raParteNombre = null;
+		String recv_3raParteDireccion = null;
+		String recv_3raPartePuerto = null;
+		String recv_primo = null;
+		String recv_x = null;
+		String recv_fx = null;
+		String seleccion = null;
+
+		public InnerTask() {
+		}
+
+		protected Void doInBackground() throws Exception {
+			try {
+				// cargar el proveedor bouncy castle (BC)
+				Security.addProvider(new BouncyCastleProvider());
+				if (Security.getProvider("BC") == null) {
+					throw new Exception(
+							"Proveedor Bouncy Castle (BC) no disponible");
+				}
+
+				// esperar conexión (y envío) de parte de Trent
+				publish("Esperando conexión de Trent...");
+				TcpSimple tcp = new TcpSimple();
+				tcp.escuchar(Integer.parseInt(tfPuerto.getText()));
+				publish("Esperando datos de parte de Trent...");
+
+				recv_2daParteNombre = tcp.recibirString();
+				recv_2daParteDireccion = tcp.recibirString();
+				recv_2daPartePuerto = tcp.recibirString();
+				recv_3raParteNombre = tcp.recibirString();
+				recv_3raParteDireccion = tcp.recibirString();
+				recv_3raPartePuerto = tcp.recibirString();
+				publish("Información del resto de las partes: "
+						+ recv_2daParteNombre + " @ " + recv_2daParteDireccion
+						+ ":" + recv_2daPartePuerto + ", "
+						+ recv_3raParteNombre + " @ " + recv_3raParteDireccion
+						+ ":" + recv_3raPartePuerto);
+				recv_primo = tcp.recibirString();
+				publish("Número primo recibido: " + recv_primo);
+				recv_x = tcp.recibirString();
+				publish("Número x recibido: " + recv_x);
+				recv_fx = tcp.recibirString();
+				publish("Número f(x) recibido: " + recv_fx);
+
+				// terminar, dejar de escuchar en el puerto
+				tcp.desconectar();
+				
+				// preguntar por espera o incio contra parte
+				seleccion = null;
+				publish("+++SELECCION");
+				while (seleccion == null) {
+					Thread.sleep(200);
+				}
+				if (seleccion.equals("")) {
+					throw new Exception("Se abortará protocolo.");
+				}
+
+				if (seleccion.equals("esperar")) {
+
+					publish("Se esperará a que " + recv_2daParteNombre + " o "
+							+ recv_3raParteNombre
+							+ " comparta sus valores x, f(x)...");
+
+					TcpSimple tcp2 = new TcpSimple();
+					tcp2.escuchar(Integer.parseInt(tfPuerto.getText()));
+					String quienComparte = tcp.recibirString();
+					String xComparte = tcp.recibirString();
+					String fxComparte = tcp.recibirString();
+					tcp2.desconectar();
+					publish("Información recibida de parte de " + quienComparte
+							+ ": x = " + xComparte + ", f(x) = " + fxComparte);
+
+					// resolución de dos ecuaciones con dos incógnitas, o en
+					// realidad, resolviendo la pendiente y usando x1, y1:
+					// m = (y1-y2)/(x1-x2)
+					// (m * x1) + S = y1
+					// S = y1 - (m * x1)
+					BigInteger biPrimo = new BigInteger(recv_primo);
+					BigInteger biX1 = new BigInteger(recv_x);
+					BigInteger biY1 = new BigInteger(recv_fx);
+					BigInteger biX2 = new BigInteger(xComparte);
+					BigInteger biY2 = new BigInteger(fxComparte);
+					// decimal para contemplar el caso de resto 0.5 (x1 y x2
+					// pueden valer [1,3]), si la multiplicación no resuelve el
+					// medio restante, toBigIntegerExact() tirará exception
+					BigDecimal bdM = new BigDecimal(biY1.subtract(biY2))
+							.divide(new BigDecimal(biX1.subtract(biX2)), 1,
+									BigDecimal.ROUND_UNNECESSARY);
+					BigInteger biS = biY1.subtract(bdM.multiply(
+							new BigDecimal(biX1)).toBigIntegerExact());
+
+					// módulo
+					biS = biS.mod(biPrimo);
+
+					// para recuperar secreto en string ascii...
+					String secretoStr = new String(biS.toByteArray(),
+							"ISO-8859-1");
+					publish("Secreto reconstruido: " + secretoStr);
+
+				} else if (seleccion.equals("compartir_con_2da_parte")) {
+
+					publish("Enviando información (x, f(x)) a "
+							+ recv_2daParteNombre + "...");
+					TcpSimple tcpComparte = new TcpSimple();
+					tcpComparte.conectar(recv_2daParteDireccion,
+							Integer.parseInt(recv_2daPartePuerto));
+					tcpComparte.enviarString("Bob");
+					tcpComparte.enviarString(recv_x);
+					tcpComparte.enviarString(recv_fx);
+					tcpComparte.desconectar();
+					publish("Información enviada.");
+
+				} else if (seleccion.equals("compartir_con_3ra_parte")) {
+
+					publish("Enviando información (x, f(x)) a "
+							+ recv_3raParteNombre + "...");
+					TcpSimple tcpComparte = new TcpSimple();
+					tcpComparte.conectar(recv_3raParteDireccion,
+							Integer.parseInt(recv_3raPartePuerto));
+					tcpComparte.enviarString("Bob");
+					tcpComparte.enviarString(recv_x);
+					tcpComparte.enviarString(recv_fx);
+					tcpComparte.desconectar();
+					publish("Información enviada.");
+
+				}
+
+				publish("PROTOCOLO TERMINADO.");
+
+			} catch (InterruptedException ie) {
+				publish("INTERRUMPIDO: " + ie.getMessage());
+			} catch (Exception e) {
+				publish("ERROR: " + e.getMessage());
+			}
+			return null;
+		}
+
+		protected void process(List<String> strs) {
+			try {
+				for (String str : strs) {
+					if (str != null && !str.equals("")) {
+						if (!str.startsWith("+++")) {
+							txtMensajes.setText(txtMensajes.getText() + str
+									+ "\n");
+						} else {
+							// mensaje especial
+							if (str.equals("+++SELECCION")) {
+								Object[] opciones = {
+										"Esperar a " + recv_2daParteNombre
+												+ " o a " + recv_3raParteNombre,
+										"Compartir con " + recv_2daParteNombre,
+										"Compartir con " + recv_3raParteNombre };
+								int n = JOptionPane.showOptionDialog(_frame,
+										"¿Cómo reconstruir el secreto?", "TFI - Selección",
+										JOptionPane.YES_NO_CANCEL_OPTION,
+										JOptionPane.QUESTION_MESSAGE, null,
+										opciones, null);
+								if (n != JOptionPane.CLOSED_OPTION) {
+									if (n == JOptionPane.YES_OPTION) {
+										seleccion = "esperar";
+									} else if (n == JOptionPane.NO_OPTION) {
+										seleccion = "compartir_con_2da_parte";
+									} else {
+										seleccion = "compartir_con_3ra_parte";
+									}
+								} else {
+									seleccion = "";
+								}
+							}
+
+						}
+					}
+				}
+			} catch (Exception e) {
+				txtMensajes.setText(txtMensajes.getText() + "\n" + "ERROR: "
+						+ e.getMessage() + "\n");
+			}
+		}
+
+		protected void done() {
+			try {
+				btnDetener.setEnabled(false);
+				btnIniciar.setEnabled(true);
+			} catch (Exception e) {
+			}
+		}
+	}
+}

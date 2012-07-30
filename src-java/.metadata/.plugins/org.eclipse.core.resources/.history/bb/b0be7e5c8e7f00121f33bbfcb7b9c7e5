@@ -1,0 +1,151 @@
+package est.tfi;
+
+import java.awt.*;
+import java.awt.image.*;
+import java.awt.event.*;
+import javax.swing.*;
+import javax.swing.border.*;
+import javax.swing.event.*;
+
+public class Dibujar extends JFrame {
+
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private BufferedImage canvas;
+
+/** Creates new form JavaPaintUI */
+public Dibujar() {
+    initComponents();
+}
+
+    //this was moved from the overriden paintComponent()
+    // instead it update the canvas BufferedImage and calls repaint()
+    public void updateCanvas() {
+        Graphics2D g2 = canvas.createGraphics();
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setPaint(Color.BLACK);
+            g2.fillOval(currentX - ((int) value / 2), currentY - ((int) value / 2), (int) value, (int) value);
+        repaint();
+    }
+
+private void initComponents() {
+
+    canvas = new BufferedImage(200,100,BufferedImage.TYPE_INT_RGB);
+
+    jPanel4 = new JPanel();
+    jSlider2 = new JSlider();
+    jLabel1 = new JLabel();
+    jPanel2 = new JPanel(new GridBagLayout());
+    JLabel canvasLabel = new JLabel(new ImageIcon(canvas));
+    jPanel2.add(canvasLabel, null);
+
+    jPanel3 = new JPanel();
+
+    setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+    setTitle("xxx");
+
+
+
+
+    jPanel2.setBackground(new Color(128, 40, 128));
+    jPanel2.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
+    // add the listeners to the label that contains the canvas buffered image
+    canvasLabel.addMouseListener(new MouseAdapter() {
+        //public void mousePressed(MouseEvent evt) {
+        //    jPanel2MousePressed(evt);
+        //}
+        public void mouseReleased(MouseEvent evt) {
+            jPanel2MouseReleased(evt);
+        }
+    });
+    canvasLabel.addMouseMotionListener(new MouseMotionAdapter() {
+        public void mouseDragged(MouseEvent evt) {
+            jPanel2MouseDragged(evt);
+        }
+    });
+
+
+    GroupLayout jPanel3Layout = new GroupLayout(jPanel3);
+    GroupLayout layout = new GroupLayout(getContentPane());
+    getContentPane().setLayout(layout);
+    layout.setHorizontalGroup(
+        layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+        .addGroup(layout.createSequentialGroup()
+            .addContainerGap()
+            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                .addComponent(jPanel2, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createSequentialGroup()
+                    .addComponent(jPanel4, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(jPanel3, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                        .addComponent(jButton2, GroupLayout.DEFAULT_SIZE, 112, Short.MAX_VALUE)
+                        .addComponent(jButton1, GroupLayout.DEFAULT_SIZE, 112, Short.MAX_VALUE))))
+            .addContainerGap())
+    );
+    layout.setVerticalGroup(
+        layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+        .addGroup(layout.createSequentialGroup()
+            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(4, 4, 4)
+                    .addComponent(jButton1, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(jButton2, GroupLayout.PREFERRED_SIZE, 28, GroupLayout.PREFERRED_SIZE))
+                .addComponent(jPanel4, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jPanel3, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(jPanel2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addContainerGap())
+    );
+
+    pack();
+}// </editor-fold>
+
+
+int currentX, currentY, oldX, oldY;
+
+private void jPanel2MouseDragged(MouseEvent evt) {
+    currentX = evt.getX();
+    currentY = evt.getY();
+    updateCanvas();
+        oldX = currentX;
+        oldY = currentY;
+
+}
+
+//Slider Properties//
+double value = 3;
+int color = 1;
+
+//mouse released//
+private void jPanel2MouseReleased(MouseEvent evt) {
+
+    currentX = evt.getX();
+    currentY = evt.getY();
+}
+
+
+// Variables declaration - do not modify
+private ButtonGroup buttonGroup1;
+private ButtonGroup buttonGroup2;
+private JButton jButton1;
+private JButton jButton2;
+private JLabel jLabel1;
+public JPanel jPanel2;
+private JPanel jPanel3;
+private JPanel jPanel4;
+private JRadioButton jRadioButton10;
+private JRadioButton jRadioButton3;
+private JRadioButton jRadioButton4;
+private JRadioButton jRadioButton5;
+private JRadioButton jRadioButton6;
+private JRadioButton jRadioButton7;
+private JRadioButton jRadioButton8;
+private JRadioButton jRadioButton9;
+public JSlider jSlider2;
+// End of variables declaration
+}

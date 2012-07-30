@@ -1,0 +1,59 @@
+package est.tfi.android;
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.os.Bundle;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
+
+public class MonedaAlAireActivity extends Activity implements OnClickListener {
+
+	public Button btnEnviar;
+	public Button btnRecibir;
+	public TextView tvCentro;
+
+	/** Called when the activity is first created. */
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.main);
+
+		btnEnviar = (Button) findViewById(R.id.button1);
+		btnRecibir = (Button) findViewById(R.id.button2);
+		btnEnviar.setOnClickListener(this);
+		btnRecibir.setOnClickListener(this);
+
+		tvCentro = (TextView) findViewById(R.id.textView1);
+
+	}
+
+	public void onClick(View v) {
+		if (v.getId() == R.id.button1) {
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setTitle("Deleting a Contact No");
+			builder.setMessage("Are you sure?");
+			builder.setIcon(android.R.drawable.ic_dialog_alert);
+			builder.setPositiveButton("Yes",
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int which) {
+							Toast toast1 = Toast.makeText(getApplicationContext(),
+									"salió por ok", Toast.LENGTH_SHORT);
+							toast1.show();
+						}
+					});
+			builder.setNegativeButton("No",
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int which) {
+							dialog.dismiss();
+						}
+					});
+			AlertDialog alert = builder.create();
+			alert.show();
+		} else if (v.getId() == R.id.button2) {
+		}
+	}
+}

@@ -1,0 +1,425 @@
+package est.tfi;
+
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
+import java.math.BigInteger;
+import java.security.SecureRandom;
+import java.security.Security;
+import java.util.List;
+
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.SwingWorker;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.EmptyBorder;
+
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import javax.swing.SwingConstants;
+import java.awt.GridLayout;
+
+public class VisualCryptoTrent extends JFrame {
+
+	private JFrame _frame;
+	private JTextField tfDestinoBob;
+	private JTextField tfPuertoBob;
+	private JButton btnIniciar;
+	private JButton btnDetener;
+	private JTextArea txtMensajes;
+	private InnerTask task;
+	private static final long serialVersionUID = 1L;
+	private JTextField tfDestinoAlice;
+	private JTextField tfPuertoAlice;
+	private BufferedImage canvas;
+	protected JPanel pnlTransparencia1;
+	protected JPanel pnlTransparencia2;
+	
+	/**
+	 * Create the frame.
+	 */
+	public VisualCryptoTrent() {
+		// referencia local
+		_frame = this;
+		// se agregará hook al cerrar
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		// tamaño fijo
+		setBounds(200, 200, 523, 721);
+		setResizable(false);
+		// título
+		setTitle("TFI - PCE - Visual Cryptography como Trent");
+
+		JPanel contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		setContentPane(contentPane);
+		contentPane.setLayout(null);
+
+		JLabel lblDestinoBob = new JLabel(
+				"Direcci\u00F3n de Bob (FQDN o direcci\u00F3n IP)");
+		lblDestinoBob.setBounds(12, 161, 233, 14);
+		contentPane.add(lblDestinoBob);
+
+		tfDestinoBob = new JTextField();
+		tfDestinoBob.setText("localhost");
+		tfDestinoBob.setBounds(251, 157, 140, 23);
+		contentPane.add(tfDestinoBob);
+		tfDestinoBob.setColumns(10);
+
+		JLabel lblPuertoBob = new JLabel(
+				"N\u00FAmero de conexi\u00F3n de Bob (puerto TCP)");
+		lblPuertoBob.setBounds(12, 186, 233, 14);
+		contentPane.add(lblPuertoBob);
+
+		tfPuertoBob = new JTextField();
+		tfPuertoBob.setText("22222");
+		tfPuertoBob.setBounds(250, 182, 70, 23);
+		contentPane.add(tfPuertoBob);
+		tfPuertoBob.setColumns(10);
+
+		JSeparator separator = new JSeparator();
+		separator.setBounds(11, 207, 500, 14);
+		contentPane.add(separator);
+
+		btnIniciar = new JButton("Iniciar");
+		btnIniciar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				btnIniciar.setEnabled(false);
+				btnDetener.setEnabled(true);
+				task = new InnerTask();
+				task.execute();
+			}
+		});
+		btnIniciar.setBounds(422, 6, 89, 25);
+		contentPane.add(btnIniciar);
+
+		btnDetener = new JButton("Detener");
+		btnDetener.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				task.cancel(true);
+			}
+		});
+		btnDetener.setEnabled(false);
+		btnDetener.setBounds(422, 31, 89, 25);
+		contentPane.add(btnDetener);
+
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(10, 217, 500, 120);
+		contentPane.add(scrollPane);
+
+		txtMensajes = new JTextArea();
+		scrollPane.setViewportView(txtMensajes);
+		txtMensajes.setEditable(false);
+		txtMensajes.setFont(new Font("Monospaced", Font.PLAIN, 11));
+		txtMensajes.setText("Esperando inicio...\n");
+
+		JLabel lblDestinoAlice = new JLabel(
+				"Direcci\u00F3n de Alice (FQDN o direcci\u00F3n IP)");
+		lblDestinoAlice.setBounds(12, 106, 233, 14);
+		contentPane.add(lblDestinoAlice);
+
+		JLabel lblPuertoAlice = new JLabel(
+				"N\u00FAmero de conexi\u00F3n de Alice (puerto TCP)");
+		lblPuertoAlice.setBounds(12, 131, 233, 14);
+		contentPane.add(lblPuertoAlice);
+
+		tfDestinoAlice = new JTextField();
+		tfDestinoAlice.setText("localhost");
+		tfDestinoAlice.setColumns(10);
+		tfDestinoAlice.setBounds(251, 102, 140, 23);
+		contentPane.add(tfDestinoAlice);
+
+		tfPuertoAlice = new JTextField();
+		tfPuertoAlice.setText("11111");
+		tfPuertoAlice.setColumns(10);
+		tfPuertoAlice.setBounds(250, 127, 70, 23);
+		contentPane.add(tfPuertoAlice);
+
+		JLabel lblImagenSecreta = new JLabel("Imagen secreta");
+		lblImagenSecreta.setBounds(10, 10, 109, 14);
+		contentPane.add(lblImagenSecreta);
+
+		JSeparator separator_1 = new JSeparator();
+		separator_1.setBounds(11, 93, 500, 14);
+		contentPane.add(separator_1);
+
+		JPanel pnlImagenSecreta = new JPanel();
+		pnlImagenSecreta.setBounds(120, 6, 272, 82);
+		contentPane.add(pnlImagenSecreta);
+
+		// hook al cerrar
+		addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent e) {
+				// ((JFrame)e.getSource()).dispose();
+				_frame.dispose();
+			}
+		});
+
+		// inicialización de canvas para dibujar secreto
+		canvas = new BufferedImage(250, 70, BufferedImage.TYPE_INT_RGB);
+		Graphics g = canvas.getGraphics();
+		g.setColor(Color.white);
+		g.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+		JLabel canvasLabel = new JLabel(new ImageIcon(canvas));
+		pnlImagenSecreta.add(canvasLabel, null);
+		pnlImagenSecreta.setBackground(Color.gray);
+		pnlImagenSecreta.setBorder(BorderFactory
+				.createBevelBorder(BevelBorder.RAISED));
+		
+		JLabel lblImagenSecreta2 = new JLabel("<html>(Dibujar sobre fondo<br />en blanco lo que ser\u00E1<br /> la imagen secreta a<br />compartir)");
+		lblImagenSecreta2.setVerticalAlignment(SwingConstants.TOP);
+		lblImagenSecreta2.setFont(new Font("Tahoma", Font.ITALIC, 10));
+		lblImagenSecreta2.setBounds(10, 25, 109, 57);
+		contentPane.add(lblImagenSecreta2);
+		
+		pnlTransparencia1 = new JPanel();
+		pnlTransparencia1.setBounds(8, 370, 502, 142);
+		contentPane.add(pnlTransparencia1);
+		pnlTransparencia1.setLayout(new GridLayout(1, 0, 0, 0));
+		
+		pnlTransparencia2 = new JPanel();
+		pnlTransparencia2.setBounds(8, 541, 502, 142);
+		contentPane.add(pnlTransparencia2);
+		pnlTransparencia2.setLayout(new GridLayout(1, 0, 0, 0));
+		
+		JLabel lblTransparencia1 = new JLabel("Transparencia # 1, a enviar a Alice (shares o partes aleatorios)");
+		lblTransparencia1.setBounds(12, 348, 498, 14);
+		contentPane.add(lblTransparencia1);
+		
+		JLabel lblTransparencia2 = new JLabel("Transparencia # 2, a enviar a Bob (shares o partes complementarios a los anteriores)");
+		lblTransparencia2.setBounds(10, 521, 501, 14);
+		contentPane.add(lblTransparencia2);
+		
+		canvasLabel.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent evt) {
+				jPanel2MousePressed(evt);
+			}
+
+			public void mouseReleased(MouseEvent evt) {
+				jPanel2MouseReleased(evt);
+			}
+		});
+		canvasLabel.addMouseMotionListener(new MouseMotionAdapter() {
+			public void mouseDragged(MouseEvent evt) {
+				jPanel2MouseDragged(evt);
+			}
+		});
+
+	}
+
+	private class InnerTask extends SwingWorker<Void, String> {
+
+		public InnerTask() {
+		}
+
+		protected Void doInBackground() throws Exception {
+			try {
+				// cargar el proveedor bouncy castle (BC)
+				Security.addProvider(new BouncyCastleProvider());
+				if (Security.getProvider("BC") == null) {
+					throw new Exception(
+							"Proveedor Bouncy Castle (BC) no disponible");
+				}
+
+				String secreto = "xxx";
+				publish("Secreto a compartir: " + secreto);
+
+				BufferedImage canvasT1 = new BufferedImage(500, 140, BufferedImage.TYPE_INT_RGB);
+				Graphics gT1 = canvasT1.getGraphics();
+				gT1.setColor(Color.white);
+				gT1.fillRect(0, 0, canvasT1.getWidth(), canvasT1.getHeight());
+				for (int y = 0; y < canvas.getHeight(); y++) {
+				    for (int x = 0; x < canvas.getWidth(); x++) {
+				          int  clr   = canvas.getRGB(x, y); 
+				          //int  red   = (clr & 0x00ff0000) >> 16;
+				          //int  green = (clr & 0x0000ff00) >> 8;
+				          //int  blue  =  clr & 0x000000ff;
+				          int yy = y * 2;
+				          int xx = x * 2;
+				          if (clr == 0)	{
+				        	  clr = 55;
+				          }
+				          if (clr == 255)	{
+				        	  clr = 95;
+				          }
+				          canvasT1.setRGB(xx, yy, clr);
+				          canvasT1.setRGB(xx+1, yy, clr);
+				          canvasT1.setRGB(xx, yy+1, clr);
+				          canvasT1.setRGB(xx+1, yy+1, clr);
+				    }
+				}
+				JLabel canvasT1Label = new JLabel(new ImageIcon(canvasT1));
+				pnlTransparencia1.add(canvasT1Label, null);
+				pnlTransparencia1.setBorder(BorderFactory.createLineBorder(Color.gray, 1));
+				pnlTransparencia1.setBorder(BorderFactory.createEmptyBorder());
+
+
+				/*
+				for (int y = 0; y < image.getHeight(); y++) {
+				    for (int x = 0; x < image.getWidth(); x++) {
+				          int  clr   = image.getRGB(x, y); 
+				          int  red   = (clr & 0x00ff0000) >> 16;
+				          int  green = (clr & 0x0000ff00) >> 8;
+				          int  blue  =  clr & 0x000000ff;
+				          image.setRGB(x, y, clr);
+				    }
+				}
+				*/
+				
+				BigInteger biSecreto = new BigInteger(
+						secreto.getBytes("ISO-8859-1"));
+
+				publish("Secreto a compartir (num): " + biSecreto);
+
+				BigInteger biPrimo = biSecreto.nextProbablePrime();
+				publish("Número (probablemente) primo siguiente: " + biPrimo);
+				int tmp_biPrimo_bitCount = biPrimo.bitCount();
+				if (tmp_biPrimo_bitCount >= 256) {
+					publish("El número es de "
+							+ tmp_biPrimo_bitCount
+							+ " bits, mayor o igual a mínimo (arbitrario) de 256 bits; se utilizará este número.");
+				} else {
+					biPrimo = BigInteger
+							.probablePrime(1024, new SecureRandom());
+					publish("El número es de "
+							+ tmp_biPrimo_bitCount
+							+ " bits, menor a mínimo (arbitrario) de 256 bits; se usará otro primo aleatorio (pidiendo 1024 bits): "
+							+ biPrimo);
+				}
+
+				// coeficiente a1
+				SecureRandom sr = new SecureRandom();
+				byte[] randomBytes = new byte[16];
+				sr.nextBytes(randomBytes);
+				BigInteger coef_a1 = new BigInteger(1, randomBytes);
+				coef_a1 = coef_a1.mod(biPrimo);
+				// String coef_a1_Str = String.format("%032x", coef_a1);
+				publish("Generación de número aleatorio (coeficiente a1 en Zp) (16 bytes): "
+						+ coef_a1);
+
+				// conectar con las otras tres partes y enviar datos
+
+				publish("Enviando información (primo, x, f(x)) a Alice...");
+				TcpSimple tcpAlice = new TcpSimple();
+				tcpAlice.conectar(tfDestinoAlice.getText(),
+						Integer.parseInt(tfPuertoAlice.getText()));
+				tcpAlice.enviarString("Bob");
+				tcpAlice.enviarString(tfDestinoBob.getText());
+				tcpAlice.enviarString(tfPuertoBob.getText());
+				tcpAlice.enviarString(biPrimo.toString());
+				tcpAlice.enviarString("1");
+				BigInteger fxAlice = coef_a1.multiply(BigInteger.valueOf(1))
+						.add(biSecreto);
+				publish("(x = 1, f(x) = " + fxAlice + ")");
+				tcpAlice.enviarString(fxAlice.toString());
+				tcpAlice.desconectar();
+				publish("Información enviada.");
+
+				publish("Enviando información (primo, x, f(x)) a Bob...");
+				TcpSimple tcpBob = new TcpSimple();
+				tcpBob.conectar(tfDestinoBob.getText(),
+						Integer.parseInt(tfPuertoBob.getText()));
+				tcpBob.enviarString("Alice");
+				tcpBob.enviarString(tfDestinoAlice.getText());
+				tcpBob.enviarString(tfPuertoAlice.getText());
+				tcpBob.enviarString(biPrimo.toString());
+				tcpBob.enviarString("2");
+				BigInteger fxBob = coef_a1.multiply(BigInteger.valueOf(2)).add(
+						biSecreto);
+				publish("(x = 2, f(x) = " + fxBob + ")");
+				tcpBob.enviarString(fxBob.toString());
+				tcpBob.desconectar();
+				publish("Información enviada.");
+
+				publish("PROTOCOLO TERMINADO.");
+
+			} catch (InterruptedException ie) {
+				publish("INTERRUMPIDO: " + ie.getMessage());
+			} catch (Exception e) {
+				publish("ERROR: " + e.getMessage());
+			}
+			return null;
+		}
+
+		protected void process(List<String> strs) {
+			try {
+				for (String str : strs) {
+					if (str != null && !str.equals("")) {
+						if (!str.startsWith("+++")) {
+							txtMensajes.setText(txtMensajes.getText() + str
+									+ "\n");
+						} else {
+							// mensaje especial
+						}
+					}
+				}
+			} catch (Exception e) {
+				txtMensajes.setText(txtMensajes.getText() + "\n" + "ERROR: "
+						+ e.getMessage() + "\n");
+			}
+		}
+
+		protected void done() {
+			try {
+				btnDetener.setEnabled(false);
+				btnIniciar.setEnabled(true);
+			} catch (Exception e) {
+			}
+		}
+	}
+
+	// /////////////////////////////////////////////////////////////////////////
+	// Variables miembro y métodos específicos para el dibujo del secreto
+	// /////////////////////////////////////////////////////////////////////////
+
+	int currentX, currentY, oldX, oldY;
+	int grosorLapiz = 7;
+
+	// update/redibujo del canvas del panel para dibujar secreto
+	public void updateCanvas() {
+		Graphics2D g2 = canvas.createGraphics();
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+				RenderingHints.VALUE_ANTIALIAS_ON);
+		g2.setPaint(Color.black);
+		g2.fillOval(currentX - grosorLapiz, currentY - grosorLapiz,
+				grosorLapiz, grosorLapiz);
+		repaint();
+	}
+
+	// evento sobre el canvas
+	private void jPanel2MouseReleased(MouseEvent evt) {
+		currentX = evt.getX();
+		currentY = evt.getY();
+	}
+
+	// evento sobre el canvas
+	private void jPanel2MouseDragged(MouseEvent evt) {
+		currentX = evt.getX();
+		currentY = evt.getY();
+		updateCanvas();
+		oldX = currentX;
+		oldY = currentY;
+	}
+
+	// evento sobre el canvas
+	private void jPanel2MousePressed(MouseEvent evt) {
+		oldX = evt.getX();
+		oldY = evt.getY();
+	}
+}

@@ -1,0 +1,338 @@
+package est.tfi;
+
+import java.awt.EventQueue;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JSeparator;
+import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.EtchedBorder;
+
+/**
+ * Frame principal (inicio)
+ */
+public class Principal extends JFrame {
+
+	public static String appName = "TFI - PCE";
+	public static Principal _frame = null;
+	private JPanel contentPane;
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					try {
+						for (LookAndFeelInfo info : UIManager
+								.getInstalledLookAndFeels()) {
+							if ("Nimbus".equals(info.getName())) {
+								UIManager.setLookAndFeel(info.getClassName());
+								break;
+							}
+						}
+					} catch (Exception e) {
+					}
+					_frame = new Principal();
+					_frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the frame.
+	 */
+	public Principal() {
+		// preguntar al salir...
+		// setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		// tamaño fijo
+		setBounds(100, 100, 453, 603);
+		setResizable(false);
+		// título
+		setTitle(Principal.appName);
+
+		// único panel
+		contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		setContentPane(contentPane);
+		contentPane.setLayout(null);
+
+		JButton btnMonedaAlice = new JButton("como Alice");
+		btnMonedaAlice.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				FairCoinFlipAlice tmpFrame = new FairCoinFlipAlice();
+				tmpFrame.setVisible(true);
+			}
+		});
+		btnMonedaAlice.setBounds(233, 101, 100, 28);
+		contentPane.add(btnMonedaAlice);
+
+		JButton btnMonedaBob = new JButton("como Bob");
+		btnMonedaBob.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				FairCoinFlipBob tmpFrame = new FairCoinFlipBob();
+				tmpFrame.setVisible(true);
+			}
+		});
+		btnMonedaBob.setBounds(336, 101, 100, 28);
+		contentPane.add(btnMonedaBob);
+
+		JLabel lblFairCoinFlip = new JLabel(
+				"Fair Coin Flip (Cara o seca justo)");
+		lblFairCoinFlip.setFont(new Font("SansSerif", Font.BOLD, 12));
+		lblFairCoinFlip.setBounds(6, 108, 229, 16);
+		contentPane.add(lblFairCoinFlip);
+
+		JSeparator separator_1 = new JSeparator();
+		separator_1.setBounds(6, 92, 430, 2);
+		contentPane.add(separator_1);
+
+		JLabel lblBitComm = new JLabel("Bit Commitment (Compromiso de bit)");
+		lblBitComm.setFont(new Font("SansSerif", Font.BOLD, 12));
+		lblBitComm.setBounds(6, 70, 229, 16);
+		contentPane.add(lblBitComm);
+
+		JButton btnBitAlice = new JButton("como Alice");
+		btnBitAlice.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				BitCommitmentAlice tmpFrame = new BitCommitmentAlice();
+				tmpFrame.setVisible(true);
+			}
+		});
+		btnBitAlice.setBounds(233, 62, 100, 28);
+		contentPane.add(btnBitAlice);
+
+		JButton btnBitBob = new JButton("como Bob");
+		btnBitBob.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				BitCommitmentBob tmpFrame = new BitCommitmentBob();
+				tmpFrame.setVisible(true);
+			}
+		});
+		btnBitBob.setBounds(336, 62, 100, 28);
+		contentPane.add(btnBitBob);
+
+		JSeparator separator_2 = new JSeparator();
+		separator_2.setBounds(6, 131, 430, 2);
+		contentPane.add(separator_2);
+		
+		JPanel panel = new JPanel();
+		panel.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+		panel.setBounds(6, 6, 432, 46);
+		contentPane.add(panel);
+		panel.setLayout(null);
+		
+		JLabel lblSubTitulo = new JLabel("PCE - PROTOCOLOS CRIPTOGRAFICOS ESPECIALES");
+		lblSubTitulo.setFont(new Font("SansSerif", Font.BOLD, 13));
+		lblSubTitulo.setBounds(16, 24, 351, 16);
+		panel.add(lblSubTitulo);
+		
+		JLabel lblTitulo = new JLabel("TFI - Trabajo Final Integrador");
+		lblTitulo.setBounds(16, 6, 191, 16);
+		panel.add(lblTitulo);
+		
+		JLabel lblSecretSharing = new JLabel("Secret Sharing (Secreto compartido)");
+		lblSecretSharing.setFont(new Font("SansSerif", Font.BOLD, 12));
+		lblSecretSharing.setBounds(6, 145, 229, 16);
+		contentPane.add(lblSecretSharing);
+		
+		JButton btnSSTrent = new JButton("como Trent");
+		btnSSTrent.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				SecretSharingTrent tmpFrame = new SecretSharingTrent();
+				tmpFrame.setVisible(true);
+			}
+		});
+		btnSSTrent.setBounds(233, 141, 100, 28);
+		contentPane.add(btnSSTrent);
+		
+		JButton btnSSAlice = new JButton("como Alice");
+		btnSSAlice.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				SecretSharingAlice tmpFrame = new SecretSharingAlice();
+				tmpFrame.setVisible(true);
+			}
+		});
+		btnSSAlice.setBounds(336, 141, 100, 28);
+		contentPane.add(btnSSAlice);
+		
+		JButton btnSSBob = new JButton("como Bob");
+		btnSSBob.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				SecretSharingBob tmpFrame = new SecretSharingBob();
+				tmpFrame.setVisible(true);
+			}
+		});
+		btnSSBob.setBounds(233, 169, 100, 28);
+		contentPane.add(btnSSBob);
+		
+		JButton btnSSCarol = new JButton("como Carol");
+		btnSSCarol.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				SecretSharingCarol tmpFrame = new SecretSharingCarol();
+				tmpFrame.setVisible(true);
+			}
+		});
+		btnSSCarol.setBounds(336, 169, 100, 28);
+		contentPane.add(btnSSCarol);
+		
+		JSeparator separator_3 = new JSeparator();
+		separator_3.setBounds(6, 209, 430, 2);
+		contentPane.add(separator_3);
+		
+		JLabel lblTimestamp = new JLabel("Timestamping Services (Servicios de");
+		lblTimestamp.setFont(new Font("SansSerif", Font.BOLD, 12));
+		lblTimestamp.setBounds(6, 223, 229, 16);
+		contentPane.add(lblTimestamp);
+		
+		JButton btnTimestampTrent = new JButton("como Trent");
+		btnTimestampTrent.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				TimestampTrent tmpFrame = new TimestampTrent();
+				tmpFrame.setVisible(true);
+			}
+		});
+		btnTimestampTrent.setBounds(233, 223, 100, 28);
+		contentPane.add(btnTimestampTrent);
+		
+		JButton btnTimestampAlice = new JButton("como Alice");
+		btnTimestampAlice.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				TimestampAlice tmpFrame = new TimestampAlice();
+				tmpFrame.setVisible(true);
+			}
+		});
+		btnTimestampAlice.setBounds(336, 223, 100, 28);
+		contentPane.add(btnTimestampAlice);
+		
+		JButton btnTimestampBob = new JButton("como Bob");
+		btnTimestampBob.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				TimestampBob tmpFrame = new TimestampBob();
+				tmpFrame.setVisible(true);
+			}
+		});
+		btnTimestampBob.setBounds(233, 252, 100, 28);
+		contentPane.add(btnTimestampBob);
+		
+		JLabel lblSMC = new JLabel("Secure Multiparty Computation");
+		lblSMC.setFont(new Font("SansSerif", Font.BOLD, 12));
+		lblSMC.setBounds(6, 296, 229, 16);
+		contentPane.add(lblSMC);
+		
+		JButton btnSMCAlice = new JButton("como Alice");
+		btnSMCAlice.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				SecureMultipartyAlice tmpFrame = new SecureMultipartyAlice();
+				tmpFrame.setVisible(true);
+			}
+		});
+
+		btnSMCAlice.setBounds(233, 292, 100, 28);
+		contentPane.add(btnSMCAlice);
+		
+		JButton btnSMCBob = new JButton("como Bob");
+		btnSMCBob.setBounds(336, 292, 100, 28);
+		contentPane.add(btnSMCBob);
+
+		JButton btnSMCCarol = new JButton("como Carol");
+		btnSMCCarol.setBounds(233, 320, 100, 28);
+		contentPane.add(btnSMCCarol);
+		
+		JButton btnSCMDave = new JButton("como Dave");
+		btnSCMDave.setBounds(336, 320, 100, 28);
+		contentPane.add(btnSCMDave);
+				
+		JSeparator separator_4 = new JSeparator();
+		separator_4.setBounds(6, 280, 430, 2);
+		contentPane.add(separator_4);
+		
+		JLabel lblTimestamp2 = new JLabel(" fechado)");
+		lblTimestamp2.setFont(new Font("SansSerif", Font.BOLD, 12));
+		lblTimestamp2.setBounds(6, 239, 229, 16);
+		contentPane.add(lblTimestamp2);
+		
+		JLabel lblSMC2 = new JLabel("(Computaci\u00F3n multi-parte segura)");
+		lblSMC2.setFont(new Font("SansSerif", Font.BOLD, 12));
+		lblSMC2.setBounds(6, 315, 229, 16);
+		contentPane.add(lblSMC2);
+
+		// menú "archivo", "ayuda", ...
+		JMenuBar menuBar = new JMenuBar();
+		setJMenuBar(menuBar);
+		JMenu mnFile = new JMenu("Archivo");
+		menuBar.add(mnFile);
+		JMenuItem mntmExit = new JMenuItem("Salir");
+		mntmExit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				Principal._frame.processWindowEvent(new WindowEvent(
+						Principal._frame, WindowEvent.WINDOW_CLOSING));
+			}
+		});
+		mnFile.add(mntmExit);
+		JMenu mnHelp = new JMenu("Ayuda");
+		menuBar.add(mnHelp);
+		JMenuItem mntmAbout = new JMenuItem("Acerca de...");
+		mntmAbout.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JOptionPane
+						.showMessageDialog(
+								Principal._frame,
+								"ESCUELA SUPERIOR TÉCNICA - GRL DIV MANUEL N. SAVIO\n"
+										+ "Posgrado de Especialización en Criptografía y Seguridad Teleinformática\n"
+										+ "Trabajo Final Integrador (TFI) - \"Protocolos Criptográficos Especiales\" (PCE)\n"
+										+ "Profesor tutor: Dr. Pedro Hecht\n"
+										+ "Alumno: Lic. Ariel Maiorano",
+								"Acerca de " + appName,
+								JOptionPane.INFORMATION_MESSAGE);
+			}
+		});
+		mnHelp.add(mntmAbout);
+
+		// hook al salir
+		addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent e) {
+				int confirmation = JOptionPane
+						.showConfirmDialog(Principal._frame, "¿Desea salir?",
+								Principal.appName, JOptionPane.YES_NO_OPTION,
+								JOptionPane.QUESTION_MESSAGE);
+				if (confirmation == JOptionPane.NO_OPTION
+						|| confirmation == JOptionPane.CLOSED_OPTION) {
+					return;
+				}
+				System.exit(0);
+			}
+		});
+
+	}
+
+	// helper
+	public static byte[] hexStringToByteArray(String s) {
+		int len = s.length();
+		byte[] data = new byte[len / 2];
+		for (int i = 0; i < len; i += 2) {
+			data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4) + Character
+					.digit(s.charAt(i + 1), 16));
+		}
+		return data;
+	}
+}
